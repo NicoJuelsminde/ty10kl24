@@ -1,0 +1,413 @@
+﻿<!DOCTYPE html>
+<html lang="da" translate="no" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="google" content="notranslate">
+    <title>FP10 FOLKESKOLENS PRØVER</title>
+    <link rel="stylesheet" href="css/style.css?k=1" type="text/css" />
+    <link rel="stylesheet" href="css/tools.css" type="text/css" />
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/uvm-top-logos.js?k=1"></script>
+    <script src="js/uvm_html5_opgave_samlet.js"></script>
+    <script src="js/jquery.mousewheel.js"></script>
+    <script type="text/javascript" src="js/flowtype.js"></script>
+    <script type="text/javascript" src="js/video-player-subtitles.js"></script>
+    <script type="text/javascript" src="js/browser-detect.js"></script>
+    <script type="text/javascript" src="js/video-player-samlet.js"></script>
+    <script type="text/javascript" src="js/audio-player.js"></script>
+    <script src="js/imageSlider.js"></script>
+    <script type="text/javascript" src="js/jquery.tooltip.js"></script>
+    <script type="text/javascript" src="js/builder.js?k=1"></script>
+    <script type="text/javascript" src="js/builder-validate.js?k=1"></script>
+    <script type="text/javascript" src="js/builder-validate.js?k=1"></script>
+    <link rel="stylesheet" href="css/builder.css?k=1" type="text/css" />
+    <link rel="stylesheet" media="print" href="css/print.css?k=1">
+    <script type="text/javascript" src="test/mathquill.js"></script>
+    <link rel="stylesheet" href="test/mathquill.css" type="text/css" />
+    <script type="text/javascript" src="js/crypto/aes.js"></script>
+    <!-- <script type="text/javascript" src="js/ckeditor_classic/build/ckeditor.js"></script> -->
+    <script src="tinymce_6.8.2/tinymce/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+    <style>
+        .table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+
+        table.border,
+        table.border th,
+        table.border td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        .table td,
+        .table th {
+            border: 1px solid #232323;
+            padding: 3px;
+        }
+    </style>
+    <script>
+        var typeWeight = {
+            "Dansk": 1,
+            "Engelsk": 2,
+            "Matematik": 3,
+            "Fysik/Kemi": 4,
+            "Ekstra": 5
+        };
+        function LoadFullPage(pageId, returnId) {
+            UVM.view.funcLoadContent(pageId, 1);
+            $(".wrapper").css("width", "100%");
+            $("#menuWrapper").css("display", "none");
+            $(".top").css("display", "none");
+            $('.PAGE').css("display", "none");
+            $('#fake-bottom-menu').css("display", "block");
+            $('#fake-bottom-menu a').data("returnId", returnId);
+            $('.PAGE[data-id="' + pageId + '"]').css({
+                "width": "100%",
+                "display": "block",
+                "padding": "0"
+            });
+        }
+        $(function () {
+            $('#fake-bottom-menu a').on("click", function () {
+                var returnId = $(this).data("returnId");
+                $(".wrapper").css("width", "");
+                $("#menuWrapper").css("display", "");
+                $(".top").css("display", "");
+                $('.PAGE').css("display", "none");
+                $('#fake-bottom-menu').css("display", "none");
+                $(window).trigger("resize");
+                UVM.view.funcLoadContent(returnId, 0);
+            });
+
+            $(document).on("click", '#29', function (e) {
+                e.preventDefault();
+                Builder.CallSave();
+                window.print();
+            });
+
+            function RunBuilder() {
+                if (typeof Builder === "undefined") {
+                    setTimeout(function () {
+                        RunBuilder();
+                    }, 10);
+                    return;
+                }
+                Builder.Init(function () {
+                    BuilderTimeKeeper.Init();
+                });
+            }
+            function CheckBrowser() {
+                if (typeof browserData === "undefined") {
+                    setTimeout(function () {
+                        CheckBrowser();
+                    }, 10);
+                    return;
+                }
+                // if (browserData.browser != "chrome") {
+                //     $("body").html("");
+                //     let div = $('<div></div>').attr("style", 'width: 800px;' +
+                //         'margin: 100px auto;' +
+                //         'background-color: #FFFFFF;' +
+                //         'border-radius: 8px;' +
+                //         'padding: 10px 20px;' +
+                //         'font-size:18px;' +
+                //         'text-align:center;').appendTo($("body"));
+                //     let span = $('<p></p>').html('For at løse denne opgave skal du bruge chrome som din browser.<br />Du kan hente chrome <a href="https://www.google.com/chrome/" target="_blank">her</a>.').appendTo(div);
+                // }
+            }
+            RunBuilder();
+            CheckBrowser();
+        });
+
+
+
+        function UndefinedToZero(value) {
+            if (typeof value === "undefined") {
+                return 0;
+            }
+            return value;
+        }
+
+        function _Time(frames, seconds, minutes, hours) {
+            frames = UndefinedToZero(frames) / 24;
+            seconds = UndefinedToZero(seconds);
+            minutes = UndefinedToZero(minutes) * 60;
+            hours = UndefinedToZero(hours) * 3600;
+            return hours + minutes + seconds + frames;
+        }
+
+        function TTime(value) {
+            if (typeof value === "undefined") {
+                value = "00:00:00:00";
+            }
+            var split = value.split(":");
+            var frames = (split[3] * 1) / 24;
+            var seconds = split[2] * 1;
+            var minutes = (split[1] * 1) * 60;
+            var hours = (split[0] * 1) * 3600;
+            var output = hours + minutes + seconds + frames;
+            return output;
+        }
+
+        function T(start, end, text, direction) {
+            if (typeof direction === "undefined") {
+                direction = "ltr";
+            }
+            return {
+                start: start,
+                end: end,
+                text: text,
+                direction: direction
+            }
+        }
+
+    </script>
+
+    <script>
+        tinymce.init({
+            selector: '.tinymce-editor',
+            language: 'da',
+            promotion: false,
+            branding: false,
+            browser_spellcheck: false,
+            plugins: 'lists fullscreen charmap wordcount autosave table autoresize',
+            autosave_interval: '1s',
+            autosave_retention: '300m',
+            autosave_restore_when_empty: true,
+            autosave_prefix: 'tinymce-{id}',
+            min_height: 500,
+            autoresize_bottom_margin: 0,
+            toolbar: 'undo redo | wordcount fullscreen | blocks | formatselect bold italic underline | charmap | bullist numlist | alignleft aligncenter alignright alignjustify lineheight outdent indent',
+            menubar: 'edit insert format tools',
+            menu: {
+                edit: { title: 'Edit', items: 'undo redo' },
+                insert: { title: 'Insert', items: 'charmap hr | pagebreak nonbreaking anchor' },
+                format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | styles blocks fontfamily fontsize align lineheight | forecolor backcolor | removeformat' },
+                tools: { title: 'Tools', items: 'wordcount' }
+            },
+            setup:
+                function (editor) {
+                    editor.on('init', function () {
+                        editor.getBody().setAttribute('translate', 'no');
+
+                        let editorContent = localStorage.getItem('tinymce-' + editor.id + 'draft');
+                        editorContent = editorContent ? editorContent : '';
+                        //Removed table inside tinymce editor
+                        // if (!editorContent.includes('tinymce-elevinfo-tabel')) {
+                        //     editor.setContent('<table class="tinymce-elevinfo-tabel" style="border-collapse: collapse; width: 100%; border-width: 1px; border-style: double; height: 113.688px;" border="1"><colgroup><col style="width: 12.9602%;"><col style="width: 17.9676%;"><col style="width: 9.27835%;"><col style="width: 14.1384%;"><col style="width: 24.1532%;"><col style="width: 21.3549%;"></colgroup><tbody><tr style="height: 22.3906px;"><td colspan="4" style="text-align: center; height: 22.3906px;"><strong>Udfyldes inden udskrift</strong><br></td><td colspan="2" style="text-align: center; height: 22.3906px;"><strong>Udfyldes efter udskrift</strong><br></td></tr><tr style="height: 34.1719px;"><td style="height: 34.1719px;">Unilogin:</td><td style="height: 34.1719px;"><br></td><td style="height: 34.1719px;">Fag:</td><td style="height: 34.1719px;"><br></td><td style="height: 34.1719px;">Elevens underskrift med Unilogin:</td><td style="height: 34.1719px;"><br></td></tr><tr style="height: 29.75px;"><td style="height: 29.75px;">Klasse/hold:</td><td style="height: 29.75px;"><br></td><td style="height: 29.75px;">Antal ord:</td><td style="height: 29.75px;"><br></td><td style="height: 29.75px;">Tilsynsførendes underskrift:</td><td style="height: 29.75px;"><br></td></tr><tr style="height: 27.375px;"><td style="height: 27.375px;">Skole:</td><td style="height: 27.375px;"><br></td><td style="height: 27.375px;"><br></td><td style="height: 27.375px;"><br></td><td style="height: 27.375px;">Antal sider:</td><td style="height: 27.375px;"><br></td></tr></tbody></table>' + '<br>' + editorContent);
+                        // }
+                    });
+                },
+            paste_preprocess: function (editor, args) {
+                if (!args.internal) {
+                    args.content = '';
+                }
+            }
+        });
+    </script>
+</head>
+
+<body data-taskid="" data-fag="fs" style="visibility:hidden">
+    <div class="wrapper">
+
+        <!--End Top-->
+        <div class="main">
+            <div id="menuWrapper">
+                <div class="sub-title">
+                </div>
+                <div id="menu">
+                </div>
+
+                <!-- END MENU -->
+                <div id="taskNumber"></div>
+            </div>
+
+            <div id="content">
+                <div class="top">
+                    <div id="uvmLogo"><img src="images/uvm_logo_stuk.png" alt="logo" /></div>
+                </div>
+
+                <!--Forside-->
+                <div class="PAGE" data-id="1" data-parentid="0" data-layout="0" data-menutekst="Forside">
+                    <div style="height:95px;">&nbsp;</div>
+                    <div>
+                        <div class="titleColor">
+                            <p>Tysk</p>
+                        </div>
+                        <br>
+                        <div class="content-text">
+                            <div class="headline">
+                                <div id="delprove">
+                                    Skriftlig fremstilling
+                                </div>
+                                <div id="timeofexam">
+                                    I menuen til venstre er der to opgaver. Du skal vælge en af opgaverne.<br><br>
+                                    Tidsforbrug til skriftlig fremstilling er ca. 2,5 time (150 minutter)<br>
+                                </div>
+                                <div id="dateofexam">
+                                    Torsdag den 2. maj 2024<br>
+                                    Kl. 13.30-16.30
+                                </div>
+                            </div>
+                            <div id="bodytext">
+                            </div>
+
+                        </div>
+                    </div>
+                    <br /><br /><br /><br />
+                </div>
+
+                <!--Mellemrum-->
+                <div class="PAGE" data-id="2" data-parentid="0" data-layout="0" data-menutekst=""></div>
+
+                <!--Opgave 1-->
+                <div class="PAGE" data-id="3" data-parentid="0" data-layout="2" data-menutekst="Opgave 1">
+                    <a class="pdfLink" id="pdfLink3" href="files/22062_FP10_tysk_skriftligfremstilling_opg1.pdf"
+                        target="_blank">LYD</a>
+                </div>
+
+                <!--Mellemrum-->
+                <div class="PAGE" data-id="4" data-parentid="0" data-layout="0" data-menutekst=""></div>
+
+                <!--Opgave 2-->
+                <div class="PAGE" data-id="5" data-parentid="0" data-layout="2" data-menutekst="Opgave 2">
+                    <a class="pdfLink" id="pdfLink5" href="files/22062_FP10_tysk_skriftligfremstilling_opg2.pdf"
+                        target="_blank">LYD</a>
+                </div>
+
+                <!--Mellemrum-->
+                <div class="PAGE" data-id="6" data-parentid="0" data-layout="0" data-menutekst=""></div>
+
+                <!--Tekstfelt til besvarelse-->
+                <div class="PAGE" data-id="7" data-parentid="0" data-layout="0"
+                    data-menutekst="Tekstfelt til besvarelse">
+                    <h2>Tekstfelt til besvarelse</h2>
+                    <p>Skriv din besvarelse i nedenstående tekstfelt. </p>
+                    <p>Når du er færdig med din opgave, skal du trykke på "Print-ikonet". </p>
+
+                    <div class="tables-contianer">
+
+                        <table class="tinymce-elevinfo-tabel"
+                            style="border-collapse: collapse; width: 100%; border-width: 1px; border-style: double; height: auto;"
+                            border="1">
+                            <tbody class="first-table">
+                                <tr style="height: 51px;">
+                                    <td colspan="4" style="text-align: center; vertical-align: middle;">
+                                        <strong>Udfyldes inden udskrift</strong><br>
+                                    </td>
+                                </tr>
+                                <tr style="height: 51px;">
+                                    <td>Unilogin:</td>
+                                    <td><input type="text" id="unilogin"></td>
+                                    <td>Fag:</td>
+                                    <td>FP10 Tysk<br>Skriftlig
+                                        fremstilling</td>
+                                </tr>
+                                <tr style="height: 51px;">
+                                    <td>Klasse/hold:</td>
+                                    <td><input type="text" id="klasse"></td>
+                                    <td>Antal ord:</td>
+                                    <td><input type="text" id="antalord"></td>
+                                </tr>
+                                <tr style="height: 51px;">
+                                    <td>Skole:</td>
+                                    <td><input type="text" id="skole"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="tinymce-elevinfo-tabel"
+                            style="border-collapse: collapse; width: 100%; border-width: 1px; border-style: double; height: auto;"
+                            border="1">
+
+                            <tbody>
+                                <tr style="height: 51px;">
+                                    <td colspan="2" style="text-align: center; vertical-align: middle;">
+                                        <strong>Udfyldes efter udskrift</strong><br>
+                                    </td>
+                                </tr>
+                                <tr style="height: 51px;">
+                                    <td style="width: 145px;">Elevents underskrift med
+                                        Unilogin:</td>
+                                    <td><br></td>
+                                </tr>
+                                <tr style="height: 51px;">
+                                    <td style="width: 145px;">Tilsynsførendes underskrift:
+                                    </td>
+                                    <td><br></td>
+                                </tr>
+                                <tr style="height: 51px;">
+                                    <td style="width: 145px;">Antal sider:</td>
+                                    <td><br></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <textarea id="6bda21fd-92cf-40b6-8050-f25548418070" class="tinymce-editor"></textarea>
+                    <!-- <p data-mce-caret="after" data-mce-bogus="all" style="top: 162px;"><br data-mce-bogus="1"></p>
+                    <div class="mce-visual-caret mce-visual-caret-hidden" data-mce-bogus="all"
+                        style="inset: 162px 704.5px 322px; width: 1px; height: 160px;"></div> -->
+
+                    <button id="printButton" class="print-btn"><img src="images/print-icon.png"></button>
+                </div>
+
+                <div class="PAGE" data-id="9999" data-parentid="0" data-layout="0"
+                    data-menutekst="Prøvesættet er underlagt ophavsret. Læs mere her."
+                    style="display: table-cell; width: 955px;">
+                    <div class="ophavsret"
+                        style="border: solid black 1px; padding: 25px 25px 10px; font-style: italic; line-height: 1.4;"
+                        data-mce-style="border: solid black 1px; padding: 25px 25px 10px; font-style: italic; line-height: 1.4;">
+                        <h2><i>Det følgende er ikke en del af prøven:</i></h2>
+                        <p><i>Dette prøvesæt er omfattet af ophavsretten, jf. ophavsretslovens &sect; 1.<br><br>
+                                Prøvesættet må alene anvendes til den på prøvesættet anførte prøve.<br><br>
+                                Al anden anvendelse af prøvesættet, herunder visning eller deling f.eks. via
+                                internettet, sociale medier, portaler og bøger, udgør en krænkelse af Børne- og
+                                Undervisningsministeriets og evt. tredjemands ophavsret og er ikke tilladt.<br><br>
+                                Overtrædelse af ophavsretten kan være erstatningspådragende og/eller strafbart.<br><br>
+                                Prøvesættet kan dog, efter at prøven er afsluttet, anvendes til undervisningsbrug på
+                                uddannelser m.v. omfattet af den lovgivning, som Styrelsen for Undervisning og Kvalitet
+                                administrerer.</i></p>
+                    </div>
+                </div>
+
+
+            </div> <!-- END CONTENT -->
+        </div> <!-- END MAIN -->
+        <div id="bottomMenu"></div>
+    </div>
+</body>
+
+</html>
+<script>
+    //Print function, for printing "Tekstfelt til besvarelse" page
+    document.getElementById("printButton").addEventListener("click", function () {
+
+        window.print();
+
+    });
+
+    // Get the input fields by their id attribute
+    var inputFields = document.querySelectorAll('input[type="text"]');
+
+    // Loop through input fields to set stored values and add event listeners
+    inputFields.forEach(function (inputField) {
+        // Check if there's any stored value for the input field
+        var storedValue = localStorage.getItem(inputField.id);
+
+        // If there's a stored value, set it as the input field value
+        if (storedValue) {
+            inputField.value = storedValue;
+        }
+
+        // Add an event listener to save the input field value when it changes
+        inputField.addEventListener('input', function () {
+            localStorage.setItem(inputField.id, inputField.value);
+        });
+    });
+</script>
